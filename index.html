@@ -27,7 +27,7 @@
   $(document).ready(function() {
     $("#set-points-button").click(function() {
       const name = $("#name").val();
-      const points = parseInt($("#points").val());
+      const points = $("#points").val();
       console.log(name, points);
       $.ajax({
         url: "/set-points",
