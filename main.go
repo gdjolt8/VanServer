@@ -30,10 +30,9 @@ func readDocs(c *mongo.Cursor, d *[]map[string]interface{}) {
 	}
 }
 func main() {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb+srv://trvlert:RrhE5a553UMc0LIC@turncraft.4bigr.mongodb.net/vdlg"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(os.Getenv("tok")))
 	// Get a handle to the database
 	collection := client.Database("vdlg").Collection("users")
-
 	// Find all documents in the collection
 	cursor, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
