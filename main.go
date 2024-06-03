@@ -110,6 +110,7 @@ func main() {
 	})
 
 	http.HandleFunc("/points", func(w http.ResponseWriter, r *http.Request) {
+		readDocs(cursor, &documents)
 		v, err := json.Marshal(documents)
 		if err != nil {
 			panic(err)
