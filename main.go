@@ -67,7 +67,7 @@ func main() {
 			update := bson.M{"$set": bson.M{"points": s["points"]}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
 
-			readDocs(cursor, documents)
+			readDocs(cursor, &documents)
 
 			for _, document := range documents {
 				if document["name"] == s["name"] && int(document["points"].(float64)) >= level_goals[int(document["points"].(float64))] {
