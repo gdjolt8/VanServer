@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<body>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+</body>
+<html>
+  <h1>ADD POINTS TO SOMEONE</h1>
+  <select name="people" id="name">
+    <option value="Darren">Darren</option>
+    <option value="Dominic">Dominic</option>
+    <option value="Connor">Connor</option>
+    <option value="Zion">Zion</option>
+    <option value="Solomon">Solomon</option>
+    <option value="Ifeanyichukwu">Ifeanyichukwu</option>
+  </select>
+  <input type="text" id="points" placeholder="Set points..." />
+  <button id="set-points-button">Set points</button>
+  <p id="message"></p>
+</html>
+<script>
+  $(document).ready(function() {
+    $("#set-points-button").click(function() {
+      const name = $("#name").val();
+      const points = parseInt($("#points").val());
+      console.log(name, points);
+      $.ajax({
+        url: "/set-points",
+        type: 'POST',
+        data: JSON.stringify({name, points}),
+        contentType: 'application/json'
+      }).done(function(data) {
+        $("#message").text("Added points successfully!");
+      });
+    });
+  });
+</script>
