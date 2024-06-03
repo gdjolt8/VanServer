@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"bytes"
 	"strconv"
+	"reflect"
 )
 
 func createKeyValuePairs(m map[string]string) string {
@@ -92,7 +93,12 @@ func main() {
 			}
 			readDocs(collection, &documents)
 			for _, document := range documents {
-				points := int(document["points"].(float64))
+				points := document["points"]
+				if reflect.TypeOf(document["points"]) == "float64" {
+					points = int(document["points"].(float64))
+				} else {
+					points = int(document["points"].(int32))
+				}
 				if document["name"] == s["name"] && points >= level_goals[points] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
