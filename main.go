@@ -66,7 +66,7 @@ func main() {
 			}
 			println(s)
 			filter := bson.M{"name": s["name"]}
-			update := bson.M{"$inc": bson.M{"points": p}}
+			update := bson.M{"$inc": bson.M{"points": int(s["points"].(float64))}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
 
 			readDocs(cursor, &documents)
