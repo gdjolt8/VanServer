@@ -94,7 +94,7 @@ func main() {
 
 			for _, document := range documents {
 				println(document)
-				if document["name"] == s["name"] && int(document["points"].(float64)) >= level_goals[int(document["level"].(float64))] {
+				if document["name"] == s["name"] && int(document["points"].(int32)) >= level_goals[int(document["level"].(int32))] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
 					if err != nil {
