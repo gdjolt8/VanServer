@@ -93,8 +93,8 @@ func main() {
 			readDocs( collection, &documents)
 
 			for _, document := range documents {
-				println(document)
-				points := int(document["points"].(int32))
+				fmt.Printf("%v", document["points"])
+				points := int(document["points"].(float64))
 				if document["name"] == s["name"] && points >= level_goals[points] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
