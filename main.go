@@ -57,12 +57,17 @@ func main() {
 
 	http.HandleFunc("/set-points", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
-			var s map[string]int
+			var s map[string]string
 			err := json.NewDecoder(r.Body).Decode(&s)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+			p, err := strconv.Atoi(s["points"])
+			if err != nil {
+				panic(err)
+			}
+			println(s)
 			filter := bson.M{"name": s["name"]}
 			update := bson.M{"$set": bson.M{"points": s["points"]}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
