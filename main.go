@@ -82,7 +82,9 @@ func main() {
 			filter := bson.M{"name": s["name"]}
 			update := bson.M{"$inc": bson.M{"points": p}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
-
+			if err != nil {
+				panic(err)
+			}
 			readDocs(cursor, &documents)
 
 			for _, document := range documents {
