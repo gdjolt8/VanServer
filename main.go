@@ -70,6 +70,7 @@ func main() {
 			readDocs(cursor, &documents)
 
 			for _, document := range documents {
+				println(document)
 				if document["name"] == s["name"] && int(document["points"].(float64)) >= level_goals[int(document["points"].(float64))] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
@@ -81,6 +82,7 @@ func main() {
 					
 				}
 			}
+			println("Success!!!")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("{\"status\": \"success\", \"message\": \"Points updated successfully.\"}"))
 		
@@ -96,5 +98,10 @@ func main() {
 		}
 		w.Write(v)
 	})
-	http.ListenAndServe(":8080", nil)
+	port, env := os.LookupEnv("PORT")
+	if !env {
+		port = "3000"
+	}
+	http.ListenAndServe(":"+port, nil)
+	println("Server runs successfully on port", port, "!")
 }
