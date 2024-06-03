@@ -15,11 +15,11 @@ import (
 )
 
 func createKeyValuePairs(m map[string]string) string {
-    b := new(bytes.Buffer)
-    for key, value := range m {
-        fmt.Fprintf(b, "%s=\"%s\"\n", key, value)
-    }
-    return b.String()
+		b := new(bytes.Buffer)
+		for key, value := range m {
+				fmt.Fprintf(b, "%s=\"%s\"\n", key, value)
+		}
+		return b.String()
 }
 
 func readF(path string) string {
@@ -41,7 +41,7 @@ func readDocs(c *mongo.Cursor, d *[]map[string]interface{}) {
 	}
 }
 func main() {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(os.Getenv("tok")))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb+srv://trvlert:RrhE5a553UMc0LIC@turncraft.4bigr.mongodb.net/vdlg"))
 	// Get a handle to the database
 	collection := client.Database("vdlg").Collection("users")
 	// Find all documents in the collection
@@ -58,7 +58,7 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -75,8 +75,12 @@ func main() {
 				return
 			}
 			println(createKeyValuePairs(s))
+			p,err := strconv.Atoi(s["points"])
+			if err != nil {
+				panic(err)	
+			}
 			filter := bson.M{"name": s["name"]}
-			update := bson.M{"$inc": bson.M{"points": strconv.Atoi(s["points"])}}
+			update := bson.M{"$inc": bson.M{"points": p}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
 
 			readDocs(cursor, &documents)
@@ -91,13 +95,13 @@ func main() {
 					} else {
 						println("level up!")
 					}
-					
+
 				}
 			}
 			println("Success!!!")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("{\"status\": \"success\", \"message\": \"Points updated successfully.\"}"))
-		
+
 		} else {
 			w.Write([]byte(r.Method + ": " + http.StatusText(http.StatusMethodNotAllowed)))
 		}
