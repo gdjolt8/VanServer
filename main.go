@@ -64,13 +64,9 @@ func main() {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			p, err := strconv.Atoi(s["points"].(string))
-			if err != nil {
-				panic(err)
-			}
 			println(s)
 			filter := bson.M{"name": s["name"]}
-			update := bson.M{"$set": bson.M{"points": p}}
+			update := bson.M{"$set": bson.M{"points": s["points"]}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
 
 			readDocs(cursor, &documents)
