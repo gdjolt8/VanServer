@@ -34,10 +34,12 @@ func readF(path string) string {
 	return string(c)
 }
 func readDocs(collection *mongo.Collection, d *[]map[string]interface{}) {
+	clear(*d)
 	c, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		panic(err)
 	}
+	
 	for c.Next(context.TODO()) {
 		var result map[string]interface{}
 		if err := c.Decode(&result); err != nil {
