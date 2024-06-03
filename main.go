@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"bytes"
 	"strconv"
-	"reflect"
 )
 
 func createKeyValuePairs(m map[string]string) string {
@@ -91,10 +90,10 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			readDocs( collection, &documents)
-
-				points := int(documents[s["name"]]["points"].(float64))
-				if documents[s["name"]] == s["name"] && points >= level_goals[points] {
+			readDocs(collection, &documents)
+			for _, document := range documents {
+				points := int(document["points"].(float64))
+				if document["name"] == s["name"] && points >= level_goals[points] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
 					if err != nil {
@@ -104,7 +103,7 @@ func main() {
 					}
 
 				}
-			
+			}
 			println("Success!!!")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("{\"status\": \"success\", \"message\": \"Points updated successfully.\"}"))
