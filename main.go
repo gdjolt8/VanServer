@@ -12,6 +12,14 @@ import (
 
 )
 
+func createKeyValuePairs(m map[string]string) string {
+    b := new(bytes.Buffer)
+    for key, value := range m {
+        fmt.Fprintf(b, "%s=\"%s\"\n", key, value)
+    }
+    return b.String()
+}
+
 func readF(path string) string {
 	file, err := os.Open(path)
 	if err != nil {
@@ -64,7 +72,7 @@ func main() {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			println(s)
+			println(createKeyValuePairs(s))
 			filter := bson.M{"name": s["name"]}
 			update := bson.M{"$inc": bson.M{"points": int(s["points"].(float64))}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
