@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
+	"strconv"
 )
 
 func readF(path string) string {
@@ -69,7 +70,7 @@ func main() {
 			}
 			println(s)
 			filter := bson.M{"name": s["name"]}
-			update := bson.M{"$set": bson.M{"points": s["points"]}}
+			update := bson.M{"$set": bson.M{"points": p}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
 
 			readDocs(cursor, &documents)
