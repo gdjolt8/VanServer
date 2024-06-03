@@ -23,7 +23,7 @@ func createKeyValuePairs(m map[string]string) string {
 }
 
 func readF(path string) string {
-	
+
 	file, err := os.Open(path)
 	if err != nil {
 		panic(err)
@@ -32,10 +32,11 @@ func readF(path string) string {
 	c, err := io.ReadAll(file)
 	return string(c)
 }
-func readDocs(d *[]map[string]interface{}) {
-	collection := client.Database("vdlg").Collection("users")
-	// Find all documents in the collection
+func readDocs(collection *mongo.Collection, d *[]map[string]interface{}) {
 	c, err := collection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		panic(err)
+	}
 	for c.Next(context.TODO()) {
 		var result map[string]interface{}
 		if err := c.Decode(&result); err != nil {
@@ -52,7 +53,7 @@ func main() {
 	// Create a slice to store the documents
 	var documents []map[string]interface{}
 	level_goals := map[int]int{1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 600, 7: 700}
-	readDocs( &documents)
+	readDocs(collection, &documents)
 	// Iterate through the results and append them to the slice
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -66,10 +67,10 @@ func main() {
 	})
 
 	http.HandleFunc("/set-points", func(w http.ResponseWriter, r *http.Request) {
-		    	w.Header().Add("Access-Control-Allow-Origin", "*")
-    			w.Header().Add("Access-Control-Allow-Credentials", "true")
-    			w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-    			w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+					w.Header().Add("Access-Control-Allow-Origin", "*")
+					w.Header().Add("Access-Control-Allow-Credentials", "true")
+					w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+					w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 
 		if r.Method == http.MethodPost {
 			var s map[string]string
@@ -89,7 +90,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			readDocs( &documents)
+			readDocs( collection, &documents)
 
 			for _, document := range documents {
 				println(document)
@@ -114,7 +115,7 @@ func main() {
 	})
 
 	http.HandleFunc("/points", func(w http.ResponseWriter, r *http.Request) {
-		readDocs( &documents)
+		readDocs(collection, &documents)
 		v, err := json.Marshal(documents)
 		if err != nil {
 			panic(err)
