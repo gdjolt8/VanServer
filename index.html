@@ -2,9 +2,11 @@
 <body>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
 </body>
 <html>
+  <div class="bg-slate-700 w-dvw h-dvh center">
   <h1>ADD POINTS TO SOMEONE</h1>
   <select name="people" id="name">
     <option value="Darren">Darren</option>
@@ -13,10 +15,13 @@
     <option value="Zion">Zion</option>
     <option value="Solomon">Solomon</option>
     <option value="Ifeanyichukwu">Ifeanyichukwu</option>
+    <option value="Stef">Stefan</option>
+    <option value="London">London</option>
   </select>
   <input type="text" id="points" placeholder="Set points..." />
-  <button id="set-points-button">Set points</button>
+  <button id="set-points-button" ckass="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Set points</button>
   <p id="message"></p>
+  </div>
 </html>
 <script>
   $(document).ready(function() {
