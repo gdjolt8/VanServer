@@ -93,21 +93,18 @@ func main() {
 			}
 			readDocs( collection, &documents)
 
-			for _, document := range documents {
-				fmt.Println(reflect.TypeOf(document["points"]))
-				points := int(document["points"].(float64))
-				if document["name"] == s["name"] && points >= level_goals[points] {
+				points := int(documents[s["name"]]["points"].(float64))
+				if documents[s["name"]] == s["name"] && points >= level_goals[points] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
 					if err != nil {
-						fmt.Println(reflect.TypeOf(document["points"]))
 						panic(err)
 					} else {
 						println("level up!")
 					}
 
 				}
-			}
+			
 			println("Success!!!")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("{\"status\": \"success\", \"message\": \"Points updated successfully.\"}"))
