@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"bytes"
 	"strconv"
-	"reflect"
 )
 
 func createKeyValuePairs(m map[string]string) string {
@@ -34,12 +33,10 @@ func readF(path string) string {
 	return string(c)
 }
 func readDocs(collection *mongo.Collection, d *[]map[string]interface{}) {
-	*d = []map[string]interface{}{}
 	c, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		panic(err)
 	}
-	
 	for c.Next(context.TODO()) {
 		var result map[string]interface{}
 		if err := c.Decode(&result); err != nil {
@@ -93,17 +90,16 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			readDocs(collection, &documents)
+			readDocs( collection, &documents)
+
 			for _, document := range documents {
-				points := 1
-				if reflect.TypeOf(document["points"]).Name() == "float64" {
-					points = int(document["points"].(float64))
-				} else {
-					points = int(document["points"].(int32))
-				}
+				fmt.Printf("%v", document["points"])
+				points := int(document["points"].(float64))
 				if document["name"] == s["name"] && points >= level_goals[points] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
+					n := bson.M{"$set": bson.M{"points": points - level_goals[points]}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
+					_, err = collection.UpdateOne(context.TODO(), filter, n)
 					if err != nil {
 						panic(err)
 					} else {
