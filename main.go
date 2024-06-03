@@ -64,7 +64,7 @@ func main() {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			p, err := strconv.Atoi(int(s["points"].(float64)))
+			p, err := strconv.Atoi(s["points"].(string))
 			if err != nil {
 				panic(err)
 			}
