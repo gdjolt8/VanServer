@@ -67,6 +67,11 @@ func main() {
 	})
 
 	http.HandleFunc("/set-points", func(w http.ResponseWriter, r *http.Request) {
+		    	w.Header().Add("Access-Control-Allow-Origin", "*")
+    			w.Header().Add("Access-Control-Allow-Credentials", "true")
+    			w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+    			w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
 		if r.Method == http.MethodPost {
 			var s map[string]string
 			err := json.NewDecoder(r.Body).Decode(&s)
@@ -89,7 +94,7 @@ func main() {
 
 			for _, document := range documents {
 				println(document)
-				if document["name"] == s["name"] && int(document["points"].(float64)) >= level_goals[int(document["points"].(float64))] {
+				if document["name"] == s["name"] && int(document["points"].(float64)) >= level_goals[int(document["level"].(float64))] {
 					update := bson.M{"$inc": bson.M{"level": 1}}
 					_, err = collection.UpdateOne(context.TODO(), filter, update)
 					if err != nil {
