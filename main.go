@@ -23,6 +23,7 @@ func createKeyValuePairs(m map[string]string) string {
 }
 
 func readF(path string) string {
+	
 	file, err := os.Open(path)
 	if err != nil {
 		panic(err)
@@ -31,7 +32,10 @@ func readF(path string) string {
 	c, err := io.ReadAll(file)
 	return string(c)
 }
-func readDocs(c *mongo.Cursor, d *[]map[string]interface{}) {
+func readDocs(d *[]map[string]interface{}) {
+	collection := client.Database("vdlg").Collection("users")
+	// Find all documents in the collection
+	c, err := collection.Find(context.TODO(), bson.M{})
 	for c.Next(context.TODO()) {
 		var result map[string]interface{}
 		if err := c.Decode(&result); err != nil {
@@ -44,16 +48,11 @@ func main() {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb+srv://trvlert:RrhE5a553UMc0LIC@turncraft.4bigr.mongodb.net/vdlg"))
 	// Get a handle to the database
 	collection := client.Database("vdlg").Collection("users")
-	// Find all documents in the collection
-	cursor, err := collection.Find(context.TODO(), bson.M{})
-	if err != nil {
-		panic(err)
-	}
 
 	// Create a slice to store the documents
 	var documents []map[string]interface{}
 	level_goals := map[int]int{1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 600, 7: 700}
-	readDocs(cursor, &documents)
+	readDocs( &documents)
 	// Iterate through the results and append them to the slice
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -90,7 +89,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			readDocs(cursor, &documents)
+			readDocs( &documents)
 
 			for _, document := range documents {
 				println(document)
@@ -115,7 +114,7 @@ func main() {
 	})
 
 	http.HandleFunc("/points", func(w http.ResponseWriter, r *http.Request) {
-		readDocs(cursor, &documents)
+		readDocs( &documents)
 		v, err := json.Marshal(documents)
 		if err != nil {
 			panic(err)
