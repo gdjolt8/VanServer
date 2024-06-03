@@ -94,7 +94,7 @@ func main() {
 			readDocs(collection, &documents)
 			for _, document := range documents {
 				points := document["points"]
-				if reflect.TypeOf(document["points"]) == "float64" {
+				if reflect.TypeOf(document["points"]).Name() == "float64" {
 					points = int(document["points"].(float64))
 				} else {
 					points = int(document["points"].(int32))
