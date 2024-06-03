@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
-
+	"bytes"
+	"strconv"
 )
 
 func createKeyValuePairs(m map[string]string) string {
@@ -74,7 +76,7 @@ func main() {
 			}
 			println(createKeyValuePairs(s))
 			filter := bson.M{"name": s["name"]}
-			update := bson.M{"$inc": bson.M{"points": int(s["points"].(float64))}}
+			update := bson.M{"$inc": bson.M{"points": strconv.Atoi(s["points"])}}
 			_, err = collection.UpdateOne(context.TODO(), filter, update)
 
 			readDocs(cursor, &documents)
