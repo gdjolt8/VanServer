@@ -53,7 +53,7 @@ func main() {
 
 	// Create a slice to store the documents
 	var documents []map[string]interface{}
-	//level_goals := map[int]int{1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 600, 7: 700}
+	level_goals := map[int]int{1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 600, 7: 700}
 	readDocs(collection, &documents)
 	// Iterate through the results and append them to the slice
 
@@ -68,19 +68,16 @@ func main() {
 	})
 
 	http.HandleFunc("/set-points", func(w http.ResponseWriter, r *http.Request) {
-					w.Header().Set("Access-Control-Allow-Origin", "*")
-					w.Header().Set("Access-Control-Allow-Credentials", "true")
-					w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-					w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		if r.Method == http.MethodPost {
+			println("Recieved post!")
 			var s map[string]string
 			err := json.NewDecoder(r.Body).Decode(&s)
 			if err != nil {
+				println("Uh oh", err.Error())
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			println(createKeyValuePairs(s))
 			p,err := strconv.Atoi(s["points"])
 			if err != nil {
 				panic(err)	
@@ -92,6 +89,21 @@ func main() {
 				panic(err)
 			}
 			readDocs( collection, &documents)
+			for _, document := range documents {
+				points := int(document["points"].(int32))
+				level := int(document["level"].(int32))
+				if document["name"] == s["name"] && points >= level_goals[level] {
+					update := bson.M{"$inc": bson.M{"level": 1}}
+					n := bson.M{"$set": bson.M{"points": points - level_goals[points]}}
+					_, err = collection.UpdateOne(context.TODO(), filter, update)
+					_, err = collection.UpdateOne(context.TODO(), filter, n)
+					if err != nil {
+						panic(err)
+					} else {
+						println("level up!")
+					}
+				}
+			}
 			println("Success!!!")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("{\"status\": \"success\", \"message\": \"Points updated successfully.\"}"))
@@ -102,6 +114,7 @@ func main() {
 	})
 
 	http.HandleFunc("/points", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		readDocs(collection, &documents)
 		v, err := json.Marshal(documents)
 		if err != nil {
