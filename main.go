@@ -33,7 +33,7 @@ func readF(path string) string {
 	return string(c)
 }
 func readDocs(collection *mongo.Collection, d *[]map[string]interface{}) {
-	*d = {}
+	*d = map[string]interface{}{1: 100, 2: 200, 3: 300, 4: 400, 5: 500, 6: 600, 7: 700}
 	c, err := collection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		panic(err)
